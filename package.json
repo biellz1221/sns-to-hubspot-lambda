@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "serverless-ignore": "^0.1.6"
+  }
+}
