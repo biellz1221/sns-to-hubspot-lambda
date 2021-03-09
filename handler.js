@@ -18,28 +18,26 @@ module.exports.hubspot = async (event) => {
 
 	if (ticketExists !== undefined) return { statusCode: 200, body: "Já existe um ticket para este e-mail" };
 
-	console.log(ticketExists);
+	const data = JSON.stringify({
+		"properties": {
+			"content": ticketContent,
+			"hs_pipeline": "0",
+			"hs_pipeline_stage": "1",
+			"hs_ticket_priority": "MEDIUM",
+			"hubspot_owner_id": process.env.TICKET_OWNER_ID.toString(),
+			"subject": ticketSubject,
+		},
+	});
 
-	// const data = JSON.stringify({
-	// 	"properties": {
-	// 		"content": ticketContent,
-	// 		"hs_pipeline": "0",
-	// 		"hs_pipeline_stage": "1",
-	// 		"hs_ticket_priority": "MEDIUM",
-	// 		"hubspot_owner_id": process.env.TICKET_OWNER_ID.toString(),
-	// 		"subject": ticketSubject,
-	// 	},
-	// });
-
-	// // create ticket
-	// const postResponse = await axios.post(`https://api.hubapi.com/crm/v3/objects/tickets?hapikey=${process.env.HUBSPOT_API_KEY}`, data, {
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 	},
-	// });
+	// create ticket
+	const postResponse = await axios.post(`https://api.hubapi.com/crm/v3/objects/tickets?hapikey=${process.env.HUBSPOT_API_KEY}`, data, {
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
 
 	return {
 		statusCode: 200,
-		//body: postResponse.data,
+		body: postResponse.data,
 	};
 };
