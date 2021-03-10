@@ -1,13 +1,9 @@
 "use strict";
 const axios = require("axios");
-const fs = require("fs");
 
 module.exports.hubspot = async (event) => {
-	fs.writeFile("log.txt", JSON.stringify(event, null, 2), function (err) {
-		if (err) {
-			console.error("Erro", err);
-		}
-	});
+	console.info("TESTANDO", "TESTE");
+	console.log("EVENTO", JSON.stringify(event, null, 2));
 
 	const type = event.notificationType;
 	if (type !== "Bounce") return { statusCode: 200 };
