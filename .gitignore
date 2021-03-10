@@ -12,5 +12,6 @@ env.json
 
 #other
 body.json
+full_body.json
 owners.json
 log.txt

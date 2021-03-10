@@ -2,17 +2,16 @@
 const axios = require("axios");
 
 module.exports.hubspot = async (event) => {
-	console.info("TESTANDO", "TESTE");
-	console.log("EVENTO", JSON.stringify(event, null, 2));
+	const snsMessage = JSON.parse(event["Records"][0].Sns.Message);
 
-	const type = event.notificationType;
+	console.log("EVENTO", JSON.stringify(event, null, 2));
+	console.info("SNS Message", snsMessage);
+
+	const type = snsMessage.notificationType;
 	if (type !== "Bounce") return { statusCode: 200 };
 
-	const ticketContent = `Motivo: ${event.bounce.bouncedRecipients[0].diagnosticCode}`;
-	const ticketSubject = `SNS: ${type} - ${event.mail.destination[0]}`;
-
-	// ticket by id
-	//const response = await axios.get(`https://api.hubapi.com/crm/v3/objects/tickets/329307198?hapikey=${process.env.HUBSPOT_API_KEY}`);
+	const ticketContent = `Motivo: ${snsMessage.bounce.bouncedRecipients[0].diagnosticCode}`;
+	const ticketSubject = `SNS: ${type} - ${snsMessage.mail.destination[0]}`;
 
 	// get tickets
 	const response = await axios.get(`https://api.hubapi.com/crm/v3/objects/tickets/?archived=false&hapikey=${process.env.HUBSPOT_API_KEY}`);
@@ -33,7 +32,8 @@ module.exports.hubspot = async (event) => {
 	});
 
 	// create ticket
-	const postResponse = await axios.post(`https://api.hubapi.com/crm/v3/objects/tickets?hapikey=${process.env.HUBSPOT_API_KEY}`, data, {
+	//const postResponse =
+	await axios.post(`https://api.hubapi.com/crm/v3/objects/tickets?hapikey=${process.env.HUBSPOT_API_KEY}`, data, {
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -41,6 +41,6 @@ module.exports.hubspot = async (event) => {
 
 	return {
 		statusCode: 200,
-		body: postResponse.data,
+		//body: postResponse.data,
 	};
 };
