@@ -10,7 +10,7 @@ module.exports.hubspot = async (event) => {
 	const type = snsMessage.notificationType;
 	if (type !== "Bounce") return { statusCode: 200 };
 
-	const ticketContent = `Motivo: ${snsMessage.bounce.bouncedRecipients[0].diagnosticCode}`;
+	const ticketContent = `Motivo: ${snsMessage.bounce.bounceSubType} - ${snsMessage.bounce.bouncedRecipients[0].diagnosticCode}`;
 	const ticketSubject = `SNS: ${type} - ${snsMessage.mail.destination[0]}`;
 
 	// get tickets
