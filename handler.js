@@ -5,13 +5,20 @@ module.exports.hubspot = async (event) => {
 	const snsMessage = JSON.parse(event["Records"][0].Sns.Message);
 
 	console.log("EVENTO", JSON.stringify(event, null, 2));
-	console.info("SNS Message", snsMessage);
+	console.info("SNS Message", snsMessage.complaint);
 
 	const type = snsMessage.notificationType;
-	if (type !== "Bounce") return { statusCode: 200 };
-
-	const ticketContent = `Motivo: ${snsMessage.bounce.bounceSubType} - ${snsMessage.bounce.bouncedRecipients[0].diagnosticCode}`;
-	const ticketSubject = `SNS: ${type} - ${snsMessage.mail.destination[0]}`;
+	//if (type !== "Bounce") return { statusCode: 200 };
+	let ticketContent = "";
+	let ticketSubject = "";
+	if (type === "Bounce") {
+		ticketContent = `Motivo: ${snsMessage.bounce.bounceSubType} - ${snsMessage.bounce.bouncedRecipients[0].diagnosticCode}`;
+		ticketSubject = `SNS: ${type} - ${snsMessage.mail.destination[0]}`;
+	} else if (type === "Complaint") {
+		const feedbackType = snsMessage.complaint.complaintFeedbackType ? snsMessage.complaint.complaintFeedbackType : snsMessage.complaint.complaintSubType;
+		ticketContent = `Motivo: ${feedbackType}`;
+		ticketSubject = `SNS: ${type} - ${snsMessage.mail.destination[0]}`;
+	}
 
 	// get tickets
 	const response = await axios.get(`https://api.hubapi.com/crm/v3/objects/tickets/?archived=false&hapikey=${process.env.HUBSPOT_API_KEY}`);
@@ -32,7 +39,7 @@ module.exports.hubspot = async (event) => {
 	});
 
 	// create ticket
-	//const postResponse =
+	// const postResponse =
 	await axios.post(`https://api.hubapi.com/crm/v3/objects/tickets?hapikey=${process.env.HUBSPOT_API_KEY}`, data, {
 		headers: {
 			"Content-Type": "application/json",
